@@ -1,5 +1,7 @@
 #include "PIDGCodeHandler.h"
 #include "config/motion_params.h"
+#include "init/axis_control.h"
+#include "init/extruder_servo.h"
 
 PIDGCodeHandler::PIDGCodeHandler() {}
 
@@ -44,6 +46,14 @@ void PIDGCodeHandler::_parseM2000(const String& command) {
             *vars[i] = val;
         }
     }
+    // Apply the new PID values to the respective axes
+    xAxis.setPositionGains(X_PID_KP, X_PID_KI, X_PID_KD);
+    xAxis.setSpeedGains(SX_PID_KP, SX_PID_KI, SX_PID_KD);
+    yAxis.setPositionGains(Y_PID_KP, Y_PID_KI, Y_PID_KD);
+    yAxis.setSpeedGains(SY_PID_KP, SY_PID_KI, SY_PID_KD);
+    zAxis.setPositionGains(Z_PID_KP, Z_PID_KI, Z_PID_KD);
+    zAxis.setSpeedGains(SZ_PID_KP, SZ_PID_KI, SZ_PID_KD);
+    extruderServo.setPositionGains(EXTRUDER_PID_KP, EXTRUDER_PID_KI, EXTRUDER_PID_KD);
 }
 
 float PIDGCodeHandler::_parseValue(const String& command, const String& key) {
