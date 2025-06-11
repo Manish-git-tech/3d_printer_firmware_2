@@ -23,6 +23,7 @@ public:
     int current_x_Dir = 0; // Current direction of X axis motor
     int current_y_Dir = 0; // Current direction of Y axis motor
     int current_z_Dir = 0; // Current direction of Z axis motor
+    int current_e_Dir = 0; // Current direction of extruder servo motor
 private:
     
 };

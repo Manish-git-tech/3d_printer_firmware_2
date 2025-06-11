@@ -14,6 +14,7 @@ public:
     float getXPos();           // mm
     float getYPos();
     float getZPos();
+    float getEPos();           // mm (extruder position)
     float getXSpeed();         // mm/s
     float getYSpeed();
     float getZSpeed();
@@ -32,6 +33,7 @@ public:
     float gettargetZSpeed();
     bool isMoving();
     float getExecutionTime();  // seconds
+    
 private:
     unsigned long _interval;
     unsigned long _lastReport = 0;
@@ -90,6 +92,7 @@ void StatusReportHandler::_sendStatus() {
     Serial.print("X:"); Serial.print(getXPos(), 2); Serial.print(" ");
     Serial.print("Y:"); Serial.print(getYPos(), 2); Serial.print(" ");
     Serial.print("Z:"); Serial.print(getZPos(), 2); Serial.print(" ");
+    Serial.print("E:"); Serial.print(getEPos(), 2); Serial.print(" ");
     Serial.print("TX:"); Serial.print(gettargetX(), 2); Serial.print(" ");
     Serial.print("TY:"); Serial.print(gettargetY(), 2); Serial.print(" ");
     Serial.print("TZ:"); Serial.print(gettargetZ(), 2); Serial.print(" ");
@@ -118,6 +121,7 @@ void StatusReportHandler::_sendStatus() {
 float StatusReportHandler::getXPos()        { return xAxis._pid.getCurrent()/X_REV_PER_MM; }
 float StatusReportHandler::getYPos()        { return yAxis._pid.getCurrent()/Y_REV_PER_MM; }
 float StatusReportHandler::getZPos()        { return zAxis._pid.getCurrent()/Z_REV_PER_MM; }
+float StatusReportHandler::getEPos()        { return extruderServo.getCurrentMM(); }
 float StatusReportHandler::getXSpeed()      { return xAxis._pid.getSpeed()/X_REV_PER_MM; }
 float StatusReportHandler::getYSpeed()      { return yAxis._pid.getSpeed()/Y_REV_PER_MM; }
 float StatusReportHandler::getZSpeed()      { return zAxis._pid.getSpeed()/Z_REV_PER_MM; }

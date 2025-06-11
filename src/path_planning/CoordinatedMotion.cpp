@@ -19,6 +19,7 @@ void CoordinatedMotion::moveLinear(float x, float y, float z, float e, float fee
     current_x_Dir = (x > _planner.xAxis.getCurrentMM()) ? 1 : (x < _planner.xAxis.getCurrentMM() ? -1 : 0);
     current_y_Dir = (y > _planner.yAxis.getCurrentMM()) ? 1 : (y < _planner.yAxis.getCurrentMM() ? -1 : 0);
     current_z_Dir = (z > _planner.zAxis.getCurrentMM()) ? 1 : (z < _planner.zAxis.getCurrentMM() ? -1 : 0);
+    current_e_Dir = (e > _extruderServo.getCurrentMM()) ? 1 : (e < _extruderServo.getCurrentMM() ? -1 : 0);
 
     if (current_x_Dir < 0) {
         x = x - X_BACKLASH_MM; // Add backlash compensation for X axis
@@ -28,6 +29,9 @@ void CoordinatedMotion::moveLinear(float x, float y, float z, float e, float fee
     }
     if (current_z_Dir < 0) {
         z = z - Z_BACKLASH_MM; // Add backlash compensation for Z axis
+    }
+    if (current_e_Dir < 0) {
+        e = e - EXTRUDER_BACKLASH_MM; // Add backlash compensation for extruder
     }
 
     float Es = e/_planner.time;

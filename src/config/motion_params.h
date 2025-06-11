@@ -25,9 +25,10 @@
 #define Z_GEAR_RATIO             3.0
 
 // Backlash compensation (in mm)
-#define X_BACKLASH_MM            0.5
-#define Y_BACKLASH_MM            0.5
-#define Z_BACKLASH_MM            0.7
+#define X_BACKLASH_MM            0.0
+#define Y_BACKLASH_MM            0.0
+#define Z_BACKLASH_MM            0.0
+#define EXTRUDER_BACKLASH_MM     0.0 // Backlash for extruder, if applicable
 
 // Motion limits (printable area, in mm)
 #define X_MIN_POS                0
