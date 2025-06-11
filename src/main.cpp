@@ -142,10 +142,17 @@ float StatusReportHandler::gettargetXSpeed() { return xAxis.speed; }
 float StatusReportHandler::gettargetYSpeed() { return yAxis.speed; }
 float StatusReportHandler::gettargetZSpeed() { return zAxis.speed; }
 bool StatusReportHandler::isMoving() {
-    return xAxis._pid._active || yAxis._pid._active || zAxis._pid._active;
+    return xAxis._pid._active || yAxis._pid._active || zAxis._pid._active || extruderServo._moving;
 }
 float StatusReportHandler::getExecutionTime() {return motion._planner.time;}
 StatusReportHandler statusReportHandler(250); // 250 ms interval
+
+void checkMovementCompletion(){
+    if (!statusReportHandler.isMoving()) {
+        Serial.println("ok");
+        return;
+    }
+}
 
 void setup() {
     // Initialize hardware and controllers
@@ -157,18 +164,14 @@ void setup() {
 }
 
 void loop() {
-    // Update axis controllers
-    motion.update();
-    xAxis.update();
-    yAxis.update();
-    zAxis.update();
+    // Process commands FIRST
     if (Serial.available()) {
         String cmd = Serial.readStringUntil('\n');
         cmd.trim();
         int handled = 0;
-            if (cmd.startsWith("G")) {
-                handled = handleGSerialCommands(cmd); // 1 if handled, 0 if not
-            } else if (cmd.startsWith("M")) {
+        if (cmd.startsWith("G")) {
+            handled = handleGSerialCommands(cmd); // 1 if handled, 0 if not
+} else if (cmd.startsWith("M")) {
                 handled = pidHandler.parseAndApply(cmd); // 1 if handled, 0 if not
                 // Apply the new PID values to the respective axes
                 xAxis.setPositionGains(X_PID_KP, X_PID_KI, X_PID_KD);
@@ -183,6 +186,29 @@ void loop() {
                 Serial.println("Unknown command: " + cmd);
             }
     }
-    statusReportHandler.update();
-    
+
+    // Update motion systems
+    motion.update();
+    xAxis.update();
+    yAxis.update();
+    zAxis.update();
+
+    // Check movement completion
+    checkMovementCompletion();
+
+    /* Temperature control (every 250ms)
+    static unsigned long lastTempTime = 0;
+    if (millis() - lastTempTime >= 250) {
+        updateTemperature();
+        lastTempTime = millis();
+    }*/
+
+    // Status reports (every 250ms)
+    static unsigned long lastStatusTime = 0;
+    if (millis() - lastStatusTime >= 250) {
+        statusReportHandler.update();
+        lastStatusTime = millis();
+    }
+
+    delayMicroseconds(100);  // Critical for stability
 }
