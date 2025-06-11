@@ -38,32 +38,6 @@ private:
     void _sendStatus();
 };
 
-// MotorControl for X Axis
-MotorControl xMotor(X_MOTOR_A_PWM_PIN, X_MOTOR_B_PWM_PIN);
-
-// MotorControl for Y Axis
-MotorControl yMotor(Y_MOTOR_A_PWM_PIN, Y_MOTOR_B_PWM_PIN); 
-
-// MotorControl for Z Axis 
-MotorControl zMotor(Z_MOTOR_A_PWM_PIN, Z_MOTOR_B_PWM_PIN);
-
-// Initialize encoders
-Encoder encoderX(X_ENCODER_A_PIN, X_ENCODER_B_PIN, X_PULSES_PER_REV);
-Encoder encoderY(Y_ENCODER_A_PIN, Y_ENCODER_B_PIN, Y_PULSES_PER_REV);
-Encoder encoderZ(Z_ENCODER_A_PIN, Z_ENCODER_B_PIN, Z_PULSES_PER_REV);
-
-
-// Initialize axis controllers for X, Y, Z axes
-AxisController xAxis( encoderX, xMotor,
-                      X_GEAR_RATIO / X_PULSES_PER_REV, X_PULSES_PER_REV);
-
-AxisController yAxis( encoderY, yMotor,
-                      Y_GEAR_RATIO / Y_PULSES_PER_REV, Y_PULSES_PER_REV);
-
-AxisController zAxis( encoderZ, zMotor,
-                      Z_GEAR_RATIO / Z_PULSES_PER_REV, Z_PULSES_PER_REV);
-
-extern void initAxisControllers();
 
 
 PIDGCodeHandler pidHandler;
@@ -163,6 +137,14 @@ void loop() {
                 handled = handleGSerialCommands(cmd); // 1 if handled, 0 if not
             } else if (cmd.startsWith("M")) {
                 handled = pidHandler.parseAndApply(cmd); // 1 if handled, 0 if not
+                // Apply the new PID values to the respective axes
+                xAxis.setPositionGains(X_PID_KP, X_PID_KI, X_PID_KD);
+                xAxis.setSpeedGains(SX_PID_KP, SX_PID_KI, SX_PID_KD);
+                yAxis.setPositionGains(Y_PID_KP, Y_PID_KI, Y_PID_KD);
+                yAxis.setSpeedGains(SY_PID_KP, SY_PID_KI, SY_PID_KD);
+                zAxis.setPositionGains(Z_PID_KP, Z_PID_KI, Z_PID_KD);
+                zAxis.setSpeedGains(SZ_PID_KP, SZ_PID_KI, SZ_PID_KD);
+                extruderServo.setPositionGains(EXTRUDER_PID_KP, EXTRUDER_PID_KI, EXTRUDER_PID_KD);
             }
             if (handled == 0) {
                 Serial.println("Unknown command: " + cmd);
