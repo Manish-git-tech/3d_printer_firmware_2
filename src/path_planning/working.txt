@@ -1,0 +1,13 @@
+graph TD
+A[moveToDiagonal(5,3,1, speed)] --> B[Calculate deltas]
+B --> C[Convert to steps]
+C --> D[Initialize Bresenham]
+D --> E[Step loop]
+E --> F[Update errors]
+F --> G{Step axis?}
+G -->|Yes| H[Call step()]
+G -->|No| I[Delay]
+H --> I
+I --> J{All steps done?}
+J -->|No| E
+J -->|Yes| K[Move complete]

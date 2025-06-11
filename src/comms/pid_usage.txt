@@ -1,0 +1,21 @@
+#include "config/motion_params.h"
+#include "comms/PIDGCodeHandler.h"
+
+PIDGCodeHandler pidHandler;
+
+void setup() {
+    LittleFS.begin();
+    load_motion_params();
+    Serial.begin(115200);
+}
+
+void loop() {
+    if (Serial.available()) {
+        String cmd = Serial.readStringUntil('\n');
+        pidHandler.parseAndApply(cmd);
+    }
+}
+
+/*Example Serial Command
+M2000 X_PID_KP=1.1 X_PID_KI=0.2 X_PID_KD=0.03 SX_PID_KP=2.0 Y_PID_KP=1.5
+Only the specified values are updated; others remain unchanged.*/

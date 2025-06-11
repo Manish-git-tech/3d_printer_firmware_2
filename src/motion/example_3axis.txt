@@ -1,0 +1,104 @@
+// X axis
+#define X_MOTOR_IN1_PIN 3
+#define X_MOTOR_IN2_PIN 2
+#define X_ENCODER_A_PIN 14
+#define X_ENCODER_B_PIN 15
+#define X_PULSES_PER_REV 4
+
+// Y axis
+#define Y_MOTOR_IN1_PIN 5
+#define Y_MOTOR_IN2_PIN 4
+#define Y_ENCODER_A_PIN 16
+#define Y_ENCODER_B_PIN 17
+#define Y_PULSES_PER_REV 6
+
+// Z axis
+#define Z_MOTOR_IN1_PIN 7
+#define Z_MOTOR_IN2_PIN 6
+#define Z_ENCODER_A_PIN 18
+#define Z_ENCODER_B_PIN 19
+#define Z_PULSES_PER_REV 8
+
+
+#include "motion/Encoder.h"
+#include "motion/MotorControl.h"
+#include "motion/CascadedPID.h"
+
+// X axis
+Encoder encoderX(X_ENCODER_A_PIN, X_ENCODER_B_PIN, X_PULSES_PER_REV);
+MotorControl motorX(X_MOTOR_IN1_PIN, X_MOTOR_IN2_PIN);
+CascadedPID controllerX(&encoderX, &motorX, X_PULSES_PER_REV);
+
+// Y axis
+Encoder encoderY(Y_ENCODER_A_PIN, Y_ENCODER_B_PIN, Y_PULSES_PER_REV);
+MotorControl motorY(Y_MOTOR_IN1_PIN, Y_MOTOR_IN2_PIN);
+CascadedPID controllerY(&encoderY, &motorY, Y_PULSES_PER_REV);
+
+// Z axis
+Encoder encoderZ(Z_ENCODER_A_PIN, Z_ENCODER_B_PIN, Z_PULSES_PER_REV);
+MotorControl motorZ(Z_MOTOR_IN1_PIN, Z_MOTOR_IN2_PIN);
+CascadedPID controllerZ(&encoderZ, &motorZ, Z_PULSES_PER_REV);
+
+void setup() {
+    Serial.begin(115200);
+
+    // Initialize all encoders and motors
+    encoderX.begin(); motorX.begin();
+    encoderY.begin(); motorY.begin();
+    encoderZ.begin(); motorZ.begin();
+
+    // Optionally tune PID for each axis
+    controllerX.setPositionGains(10, 0.5, 20); controllerX.setSpeedGains(100, 10, 0);
+    controllerY.setPositionGains(10, 0.5, 20); controllerY.setSpeedGains(100, 10, 0);
+    controllerZ.setPositionGains(10, 0.5, 20); controllerZ.setSpeedGains(100, 10, 0);
+
+    Serial.println("Ready. Send: X<pos> <spd>_ Y<pos> <spd>_ Z<pos> <spd>_");
+    Serial.println("Example: X10 2_ Y-5 1.5_ Z3 0.8_");
+}
+
+
+void loop() {
+    static String input = "";
+    while (Serial.available()) {
+        char c = Serial.read();
+        if (c == '_') {
+            input.trim();
+            if (input.length() > 0) {
+                // Parse for each axis
+                if (input.startsWith("X") || input.startsWith("x")) {
+                    int space = input.indexOf(' ');
+                    if (space > 1) {
+                        float rot = input.substring(1, space).toFloat();
+                        float spd = input.substring(space + 1).toFloat();
+                        controllerX.moveTo(rot, spd);
+                        Serial.print("X axis: Move to "); Serial.print(rot); Serial.print(" at "); Serial.print(spd); Serial.println(" rot/sec");
+                    }
+                } else if (input.startsWith("Y") || input.startsWith("y")) {
+                    int space = input.indexOf(' ');
+                    if (space > 1) {
+                        float rot = input.substring(1, space).toFloat();
+                        float spd = input.substring(space + 1).toFloat();
+                        controllerY.moveTo(rot, spd);
+                        Serial.print("Y axis: Move to "); Serial.print(rot); Serial.print(" at "); Serial.print(spd); Serial.println(" rot/sec");
+                    }
+                } else if (input.startsWith("Z") || input.startsWith("z")) {
+                    int space = input.indexOf(' ');
+                    if (space > 1) {
+                        float rot = input.substring(1, space).toFloat();
+                        float spd = input.substring(space + 1).toFloat();
+                        controllerZ.moveTo(rot, spd);
+                        Serial.print("Z axis: Move to "); Serial.print(rot); Serial.print(" at "); Serial.print(spd); Serial.println(" rot/sec");
+                    }
+                }
+            }
+            input = "";
+        } else {
+            input += c;
+        }
+    }
+
+    // Update all controllers
+    controllerX.update();
+    controllerY.update();
+    controllerZ.update();
+}

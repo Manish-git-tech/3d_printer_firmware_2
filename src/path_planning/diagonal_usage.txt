@@ -1,0 +1,29 @@
+#include <Arduino.h>
+#include "AxisController.h"
+#include "DiagonalMotionController.h"
+
+// Assume encoderX, encoderY, encoderZ, xMotor, yMotor, zMotor, etc. are defined elsewhere
+// and AxisController constructors are properly set up
+
+AxisController xAxis(encoderX, xMotor, X_GEAR_RATIO / X_PULSES_PER_REV, X_PULSES_PER_REV);
+AxisController yAxis(encoderY, yMotor, Y_GEAR_RATIO / Y_PULSES_PER_REV, Y_PULSES_PER_REV);
+AxisController zAxis(encoderZ, zMotor, Z_GEAR_RATIO / Z_PULSES_PER_REV, Z_PULSES_PER_REV);
+
+DiagonalMotionController diagCtrl(xAxis, yAxis, zAxis);
+
+void setup() {
+    xAxis.begin();
+    yAxis.begin();
+    zAxis.begin();
+}
+
+void loop() {
+    diagCtrl.update();
+
+    if (!diagCtrl.isMoving()) {
+        // Start a new move if needed
+        diagCtrl.startMove(5.0, 3.0, 1.0, 50.0);
+    }
+    // ...other non-blocking tasks...
+}
+

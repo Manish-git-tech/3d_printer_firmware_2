@@ -1,0 +1,47 @@
+#include "Encoder.h"
+#include "MotorControl.h"
+#include "CascadedPID.h"
+
+// Pin assignments
+#define MOTOR_IN1_PIN 3
+#define MOTOR_IN2_PIN 2
+#define ENCODER_A_PIN 14
+#define ENCODER_B_PIN 15
+#define PULSES_PER_REV 4
+
+Encoder encoder(ENCODER_A_PIN, ENCODER_B_PIN, PULSES_PER_REV);
+MotorControl motor(MOTOR_IN1_PIN, MOTOR_IN2_PIN);
+CascadedPID controller(&encoder, &motor, PULSES_PER_REV);
+
+void setup() {
+    Serial.begin(115200);
+    encoder.begin();
+    motor.begin();
+
+    // Optionally tune PID
+    controller.setPositionGains(10, 0.5, 20);
+    controller.setSpeedGains(100, 10, 0);
+
+    Serial.println("Ready. Send: <rotations> <speed>_ (e.g. 5 2_)");
+}
+
+void loop() {
+    static String input = "";
+    while (Serial.available()) {
+        char c = Serial.read();
+        if (c == '_') {
+            input.trim();
+            int space = input.indexOf(' ');
+            if (space > 0) {
+                float rot = input.substring(0, space).toFloat();
+                float spd = input.substring(space + 1).toFloat();
+                controller.moveTo(rot, spd);
+                Serial.print("Moving to "); Serial.print(rot); Serial.print(" at "); Serial.print(spd); Serial.println(" rot/sec");
+            }
+            input = "";
+        } else {
+            input += c;
+        }
+    }
+    controller.update();
+}

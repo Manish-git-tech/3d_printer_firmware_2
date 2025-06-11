@@ -1,0 +1,14 @@
+#include "comms/StatusReportHandler.h"
+
+StatusReportHandler statusReporter;
+
+void setup() {
+    Serial.begin(115200);
+    statusReporter.begin();
+    // ... other setup ...
+}
+
+void loop() {
+    statusReporter.update();
+    // ... other loop code ...
+}

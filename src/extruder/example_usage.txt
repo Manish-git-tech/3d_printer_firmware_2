@@ -1,0 +1,32 @@
+// ExampleUseCase.cpp
+#include "ServoSystem.h"
+
+// Pins and conversion factor (1mm = 10°)
+ServoSystem axis1(3, 26, 10.0f); // servo_pin, pot_pin, mm_to_deg
+
+void setup() {
+    Serial.begin(115200);
+    axis1.begin();
+    Serial.println("3D Printer Axis Control System");
+}
+
+void loop() {
+    static unsigned long last_update = 0;
+    
+    // Handle serial commands
+    if(Serial.available()) {
+        float target_mm = Serial.parseFloat();
+        Serial.read(); // Clear buffer
+        axis1.moveTo(target_mm);
+        Serial.print("Moving to ");
+        Serial.print(target_mm);
+        Serial.println("mm");
+    }
+    
+    // Update control system
+    if(millis() - last_update > 20) {
+        axis1.update();
+        axis1.printStatus();
+        last_update = millis();
+    }
+}

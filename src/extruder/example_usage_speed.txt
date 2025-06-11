@@ -1,0 +1,52 @@
+#include "ServoSystem.h"
+
+// Example: servo pin 3, potentiometer pin 26, 1mm = 10 degrees
+ServoSystem extruderServo(3, 26, 10.0f);
+
+void setup() {
+    Serial.begin(115200);
+    extruderServo.begin();
+
+    Serial.println("ServoSystem Demo: Send '<mm> <mm/s>' to move, e.g. '5 1' for 5mm at 1mm/s");
+}
+
+void loop() {
+    static unsigned long last_update = 0;
+
+    // Handle serial command: "<mm> <mm/s>\n"
+    if (Serial.available()) {
+        float target_mm = Serial.parseFloat();
+        float speed_mm_s = Serial.parseFloat();
+        while (Serial.available()) Serial.read(); // flush
+
+        if (target_mm != 0 || speed_mm_s != 0) {
+            extruderServo.moveTo(target_mm, speed_mm_s);
+            Serial.print("Moving to ");
+            Serial.print(target_mm);
+            Serial.print(" mm at ");
+            Serial.print(speed_mm_s);
+            Serial.println(" mm/s");
+        }
+    }
+
+    // Update control loop at 50Hz
+    if (millis() - last_update > 20) {
+        extruderServo.update();
+        extruderServo.printStatus();
+        last_update = millis();
+    }
+}
+
+
+
+/*How to Use
+Open the serial monitor.
+
+Send: 5 1 and press Enter.
+→ The servo will move to 5mm (50 degrees) at a speed of 1mm/s (10 degrees/sec).
+
+Send: 20 2
+→ The servo will move to 20mm (200 degrees) at 2mm/s (20 degrees/sec).
+
+Send: -10 0.5
+→ The servo will move to -10mm (-100 degrees) at 0.5mm/s (5 degrees/sec).*/

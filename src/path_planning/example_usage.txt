@@ -1,0 +1,24 @@
+#include "Motion/BresenhamPlanner.h"
+#include "Motion/CoordinatedMotion.h"
+
+// Initialize controllers
+AxisController xAxis(/*...*/);
+AxisController yAxis(/*...*/);
+AxisController zAxis(/*...*/);
+ServoSystem extruder(/*...*/);
+
+BresenhamPlanner planner(xAxis, yAxis, zAxis, extruder);
+CoordinatedMotion motion(planner);
+
+void setup() {
+    // Initialize hardware and controllers
+}
+
+void loop() {
+    motion.update();
+    
+    // Example command: move to X100, Y200, Z50, E10 at 50mm/s
+    if(receivedCommand) {
+        motion.moveLinear(100, 200, 50, 10, 50);
+    }
+}
