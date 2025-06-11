@@ -15,11 +15,11 @@ public:
     float speedz;
     float time;
 
-
-private:
     AxisController& xAxis;
     AxisController& yAxis;
     AxisController& zAxis;
+
+private:
 
     float start_x, start_y, start_z;
     float end_x, end_y, end_z;

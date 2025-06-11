@@ -20,12 +20,12 @@ public:
     void setPositionGains(float kp, float ki, float kd);
     void setSpeedGains(float kp, float ki, float kd);
     float speed;
-    
+    MotorControl _motor;
     CascadedPID _pid;
 
 private:
     Encoder _encoder;
-    MotorControl _motor;
+    
     float _rotations_per_mm;
     int _pulses_per_rev;
     float _steps_per_mm;

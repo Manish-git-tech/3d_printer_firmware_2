@@ -55,13 +55,13 @@ Encoder encoderZ(Z_ENCODER_A_PIN, Z_ENCODER_B_PIN, Z_PULSES_PER_REV);
 
 // Initialize axis controllers for X, Y, Z axes
 AxisController xAxis( encoderX, xMotor,
-                      X_GEAR_RATIO / X_PULSES_PER_REV, X_PULSES_PER_REV);
+                      X_REV_PER_MM, X_PULSES_PER_REV);
 
 AxisController yAxis( encoderY, yMotor,
-                      Y_GEAR_RATIO / Y_PULSES_PER_REV, Y_PULSES_PER_REV);
+                      Y_REV_PER_MM, Y_PULSES_PER_REV);
 
 AxisController zAxis( encoderZ, zMotor,
-                      Z_GEAR_RATIO / Z_PULSES_PER_REV, Z_PULSES_PER_REV);
+                      Z_REV_PER_MM, Z_PULSES_PER_REV);
 
 extern void initAxisControllers();
 
@@ -115,12 +115,12 @@ void StatusReportHandler::_sendStatus() {
 }
 
 
-float StatusReportHandler::getXPos()        { return xAxis.getCurrentMM(); }
-float StatusReportHandler::getYPos()        { return yAxis.getCurrentMM(); }
-float StatusReportHandler::getZPos()        { return zAxis.getCurrentMM(); }
-float StatusReportHandler::getXSpeed()      { return xAxis.getCurrentSpeedMM_S(); }
-float StatusReportHandler::getYSpeed()      { return yAxis.getCurrentSpeedMM_S(); }
-float StatusReportHandler::getZSpeed()      { return zAxis.getCurrentSpeedMM_S(); }
+float StatusReportHandler::getXPos()        { return xAxis._pid.getCurrent()/X_REV_PER_MM; }
+float StatusReportHandler::getYPos()        { return yAxis._pid.getCurrent()/Y_REV_PER_MM; }
+float StatusReportHandler::getZPos()        { return zAxis._pid.getCurrent()/Z_REV_PER_MM; }
+float StatusReportHandler::getXSpeed()      { return xAxis._pid.getSpeed()/X_REV_PER_MM; }
+float StatusReportHandler::getYSpeed()      { return yAxis._pid.getSpeed()/Y_REV_PER_MM; }
+float StatusReportHandler::getZSpeed()      { return zAxis._pid.getSpeed()/Z_REV_PER_MM; }
 float StatusReportHandler::getTemperature() { return 25.0f; } 
 String StatusReportHandler::getExtruderStatus() { return extruderServo._moving ? "extruding" : "idle"; }
 String StatusReportHandler::getAxisStatus(char axis) { switch (axis) { case 'X': if(xAxis._pid._active) return "moving"; else return "idle"; 
@@ -155,6 +155,9 @@ void setup() {
 void loop() {
     // Update axis controllers
     motion.update();
+    xAxis.update();
+    yAxis.update();
+    zAxis.update();
     if (Serial.available()) {
         String cmd = Serial.readStringUntil('\n');
         cmd.trim();

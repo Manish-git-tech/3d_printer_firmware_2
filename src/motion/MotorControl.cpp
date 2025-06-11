@@ -15,9 +15,11 @@ void MotorControl::setPower(int pwm) {
     if (pwm > 0) {
         analogWrite(_in1, value);
         digitalWrite(_in2, LOW);
+        last_direction = 1; // Forward
     } else if (pwm < 0) {
         digitalWrite(_in1, LOW);
         analogWrite(_in2, value);
+        last_direction = -1; // Backward
     } else {
         stop();
     }

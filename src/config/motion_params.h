@@ -14,6 +14,11 @@
 #define Y_PULSES_PER_REV         4
 #define Z_PULSES_PER_REV         4
 
+//Revoulution per mm
+#define X_REV_PER_MM 1
+#define Y_REV_PER_MM 1
+#define Z_REV_PER_MM 1
+
 // Gear ratios (if any), set to 1.0 if direct drive
 #define X_GEAR_RATIO             2.0   // Example: 2:1 gear ratio
 #define Y_GEAR_RATIO             2.0
