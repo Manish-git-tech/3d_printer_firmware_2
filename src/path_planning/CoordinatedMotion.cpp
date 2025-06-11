@@ -20,14 +20,14 @@ void CoordinatedMotion::moveLinear(float x, float y, float z, float e, float fee
     current_y_Dir = (y > _planner.yAxis.getCurrentMM()) ? 1 : (y < _planner.yAxis.getCurrentMM() ? -1 : 0);
     current_z_Dir = (z > _planner.zAxis.getCurrentMM()) ? 1 : (z < _planner.zAxis.getCurrentMM() ? -1 : 0);
 
-    if (current_x_Dir* last_x_Dir < 0) {
-        x = x + X_BACKLASH_MM; // Add backlash compensation for X axis
+    if (current_x_Dir < 0) {
+        x = x - X_BACKLASH_MM; // Add backlash compensation for X axis
     }
-    if (current_y_Dir* last_y_Dir < 0) {
-        y = y + Y_BACKLASH_MM; // Add backlash compensation for Y axis
+    if (current_y_Dir < 0) {
+        y = y - Y_BACKLASH_MM; // Add backlash compensation for Y axis
     }
-    if (current_z_Dir* last_z_Dir < 0) {
-        z = z + Z_BACKLASH_MM; // Add backlash compensation for Z axis
+    if (current_z_Dir < 0) {
+        z = z - Z_BACKLASH_MM; // Add backlash compensation for Z axis
     }
 
     float Es = e/_planner.time;
