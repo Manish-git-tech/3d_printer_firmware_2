@@ -38,6 +38,32 @@ private:
     void _sendStatus();
 };
 
+// MotorControl for X Axis
+MotorControl xMotor(X_MOTOR_A_PWM_PIN, X_MOTOR_B_PWM_PIN);
+
+// MotorControl for Y Axis
+MotorControl yMotor(Y_MOTOR_A_PWM_PIN, Y_MOTOR_B_PWM_PIN); 
+
+// MotorControl for Z Axis 
+MotorControl zMotor(Z_MOTOR_A_PWM_PIN, Z_MOTOR_B_PWM_PIN);
+
+// Initialize encoders
+Encoder encoderX(X_ENCODER_A_PIN, X_ENCODER_B_PIN, X_PULSES_PER_REV);
+Encoder encoderY(Y_ENCODER_A_PIN, Y_ENCODER_B_PIN, Y_PULSES_PER_REV);
+Encoder encoderZ(Z_ENCODER_A_PIN, Z_ENCODER_B_PIN, Z_PULSES_PER_REV);
+
+
+// Initialize axis controllers for X, Y, Z axes
+AxisController xAxis( encoderX, xMotor,
+                      X_GEAR_RATIO / X_PULSES_PER_REV, X_PULSES_PER_REV);
+
+AxisController yAxis( encoderY, yMotor,
+                      Y_GEAR_RATIO / Y_PULSES_PER_REV, Y_PULSES_PER_REV);
+
+AxisController zAxis( encoderZ, zMotor,
+                      Z_GEAR_RATIO / Z_PULSES_PER_REV, Z_PULSES_PER_REV);
+
+extern void initAxisControllers();
 
 
 PIDGCodeHandler pidHandler;
