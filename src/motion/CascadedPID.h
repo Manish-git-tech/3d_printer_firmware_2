@@ -40,4 +40,6 @@ private:
     float _targetRot;
     
     unsigned long _lastTime;
+    float _start_time;
+    float _start_pos;
 };

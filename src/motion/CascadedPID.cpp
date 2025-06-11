@@ -26,6 +26,8 @@ void CascadedPID::moveTo(float rotations, float maxSpeed) {
     _lastTime = millis();
     Serial.print("CascadedPID: moveTo targetRot=");
     Serial.print(_targetRot);
+    _start_time = millis();
+    _start_pos = getCurrent();
 }
 
 void CascadedPID::stop() {
@@ -40,7 +42,11 @@ void CascadedPID::home() {
 
 float CascadedPID::getTarget() { return _targetRot; }
 float CascadedPID::getCurrent() { return _enc->getRotations(); }
-float CascadedPID::getSpeed() { return _enc->getSpeed(); }
+float CascadedPID::getSpeed() { 
+    unsigned long now1 = millis();
+    float ddt = now1 - _start_time;
+    return (getCurrent()- _start_pos)*1000/ddt;
+}
 
 void CascadedPID::update() {
     if (!_active) return;
@@ -51,7 +57,7 @@ void CascadedPID::update() {
 
     _enc->updateSpeed();
     float currentRot = _enc->getRotations();
-    float currentSpd = _enc->getSpeed();
+    float currentSpd = getSpeed();
 
     // --- Outer loop: Position PID ---
     float posError = _targetRot - currentRot;
