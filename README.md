@@ -1,6 +1,6 @@
 # Custom 3D Printer Firmware for Raspberry Pi Pico with Quadrature Encoders and Advanced Motion Control
 
-3D Printer implements precise multi-axis motion control for custom 3D printers using Raspberry Pi Pico/RP2040, featuring quadrature encoder feedback, Bresenham-based path planning, cascaded PID control, and robust configuration storage using LittleFS. Designed for PlatformIO with modular architecture and real-time performance.
+This 3D Printer Firmware implements precise multi-axis motion control for my custom built 3D printer using Raspberry Pi Pico/RP2040, featuring quadrature encoder feedback, Bresenham-based path planning, cascaded PID control, and robust configuration storage using LittleFS. Designed for PlatformIO with modular architecture and real-time performance.
 
 ---
 
